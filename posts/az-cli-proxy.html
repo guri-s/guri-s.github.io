@@ -23,7 +23,7 @@
     <meta property="og:title" content="Use Azure CLI behind a proxy on MacOS" />
 <meta property="og:description" content="az cli proxy" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://guri-s.github.io/posts/blog-post.html" /><meta property="article:section" content="posts" />
+<meta property="og:url" content="https://guri-s.github.io/posts/az-cli-proxy.html" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2021-09-24T00:00:00+00:00" />
 <meta property="article:modified_time" content="2021-09-24T00:00:00+00:00" />
 
@@ -34,7 +34,7 @@
 </title>
 
     
-      <link rel="canonical" href="https://guri-s.github.io/posts/blog-post.html">
+      <link rel="canonical" href="https://guri-s.github.io/posts/az-cli-proxy.html">
     
 
     <link rel="preload" href="../fonts/forkawesome-webfont.woff2?v=1.2.0" as="font" type="font/woff2" crossorigin>
@@ -126,7 +126,7 @@
       <header>
         <div class="post-title">
           <h1 class="title">
-            <a class="title-link" href="https://guri-s.github.io/posts/blog-post.html">
+            <a class="title-link" href="https://guri-s.github.io/posts/az-cli-proxy.html">
               Use Azure CLI behind a proxy on MacOS
             </a>
           </h1>
@@ -141,7 +141,7 @@
             </span>
             <span class="reading-time">
               <i class="fa fa-clock-o" aria-hidden="true"></i>
-              0-minute read
+              2-minute read
             </span>
           </div>
           
@@ -152,7 +152,23 @@
 
       <div>
         
-        
+        <p>So you can run Azure CLI commands on a mac by setting the environment variable</p>
+<p><code>export AZURE_CLI_DISABLE_CONNECTION_VERIFICATION=1</code></p>
+<p>This would allow the CLI to ignore the SSL certifcate validity but you are still getting a warning about Unverified HTTPS requests being made.
+It is not advised to use this method because it disables SSL verification(security is important you know especially in worksplace).</p>
+<p>Microsoft does provide a document <a href="https://docs.microsoft.com/en-us/cli/azure/use-cli-effectively#work-behind-a-proxy">URL</a> about working with a proxy.</p>
+<p>As Azure CLI is python based, you would need to set <code>REQUESTS_CA_BUNDLE</code> environment variable to point to your corporate proxy&rsquo;s certificate file.</p>
+<p>Open Keychain Access on the Mac and look for your the root certificate for your proxy. Export the cert as <code>.pem</code> file.</p>
+<p>If you already do not have OpenSSL installed then install it by running</p>
+<p><code>brew install openssl@1.1</code></p>
+<p>Copy the <code>.pem</code> file to <code>/usr/local/etc/openssl@1.1/certs</code></p>
+<p>Run this command <code>/usr/local/opt/openssl@1.1/bin/c_rehash</code> this will scan directories &amp; creates sym link for the root certificate you added.</p>
+<p>Now all you need to do is to point the Python requests to the your proxy&rsquo;s root certificate by setting the environment variable as</p>
+<p><code>export REQUESTS_CA_BUNDLE=/usr/local/etc/openssl@1.1/certs/your-cert.pem</code></p>
+<p>You may want to set this environment variable permanently by adding it to your profile</p>
+<p><code>echo &quot;export REQUESTS_CA_BUNDLE=/usr/local/etc/openssl@1.1/certs/your-cert.pem&quot; &gt;&gt; ~/.zshrc</code></p>
+<p>This would now allow you to use Azure CLI &amp; by using your corporate proxy certificate.</p>
+
       </div>
 
 
